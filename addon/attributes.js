@@ -81,8 +81,9 @@ function fragment(declaredModelName, options) {
   let metaType = metaTypeFor('fragment', declaredModelName, options);
 
   function setupFragment(store, record, key) {
+    debugger
     let internalModel = internalModelFor(record);
-    return internalModel._modelData.setupFragment(key, options);
+    return internalModel._modelData.setupFragment(key, options, declaredModelName, record);
   }
 
   function setFragmentValue(record, key, fragment, value) {
@@ -210,7 +211,7 @@ function fragmentProperty(type, options, setupFragment, setFragmentValue) {
       let internalModel = internalModelFor(this);
       let fragment = setupFragment(this.store, this, key);
 
-      return internalModel._fragments[key] = fragment;
+      return internalModel._modelData.fragments[key] = fragment;
     },
     set(key, value) {
       let internalModel = internalModelFor(this);
@@ -218,7 +219,7 @@ function fragmentProperty(type, options, setupFragment, setFragmentValue) {
 
       fragment = setFragmentValue(this, key, fragment, value);
 
-      return internalModel._fragments[key] = fragment;
+      return internalModel._modelData.fragments[key] = fragment;
     }
   }).meta(meta);
 }
@@ -227,7 +228,7 @@ function fragmentArrayProperty(metaType, options, createArray) {
   function setupFragmentArray(store, record, key) {
     let internalModel = internalModelFor(record);
     let data = getWithDefault(internalModel, key, options, 'array');
-    let fragments = internalModel._fragments[key] || null;
+    let fragments = internalModel._modelData.fragments[key] || null;
 
     /*
     // If we already have a processed fragment in _data and our current fragment is
@@ -261,7 +262,7 @@ function fragmentArrayProperty(metaType, options, createArray) {
       assert('A fragment array property can only be assigned an array or null');
     }
 
-    if (internalModel._data[key] !== fragments || get(fragments, 'hasDirtyAttributes')) {
+    if (internalModel._modelData._data[key] !== fragments || get(fragments, 'hasDirtyAttributes')) {
       fragmentDidDirty(record, key, fragments);
     } else {
       fragmentDidReset(record, key);
@@ -300,7 +301,7 @@ function fragmentOwner() {
   return computed(function() {
     assert('Fragment owner properties can only be used on fragments.', isFragment(this));
 
-    return internalModelFor(this)._owner;
+    return internalModelFor(this)._modelData._owner;
   }).meta({
     isFragmentOwner: true
   }).readOnly();

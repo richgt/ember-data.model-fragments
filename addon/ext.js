@@ -56,8 +56,8 @@ Store.reopen({
     // Re-wire the internal model to use the fragment state machine
     internalModel.currentState = FragmentRootState.empty;
 
-    internalModel._name = null;
-    internalModel._owner = null;
+    internalModel._modelData._name = null;
+    internalModel._modelData._owner = null;
 
     internalModel.loadedData();
 

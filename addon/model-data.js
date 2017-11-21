@@ -17,6 +17,7 @@ export default class FragmentModelData extends ModelData {
       super(modelName, id, store, data, internalModel);
 
       // TODO Optimize
+      this.fragmentData = Object.create(null);
       this.fragments = Object.create(null);
       this.fragmentNames = [];
       this.internalModel.type.eachComputedProperty((name, options) => {
@@ -28,14 +29,14 @@ export default class FragmentModelData extends ModelData {
 
     // Returns the value of the property or the default propery
     getFragmentWithDefault(key, options, type) {
-      let data = this.fragments[key];
+      let data = this.fragmentData[key];
       if (data !== undefined) {
         return data;
       }
       return getFragmentDefaultValue(options, type);
     }
 
-    setupFragment(key, options) {
+    setupFragment(key, options, declaredModelName, record) {
       let data = this.getFragmentWithDefault(key, options, 'object');
       let fragment = this.fragments[key];
 
@@ -53,7 +54,7 @@ export default class FragmentModelData extends ModelData {
         if (fragment) {
           setFragmentData(fragment, data);
         } else {
-          fragment = createFragment(store, declaredModelName, record, key, options, data);
+          fragment = createFragment(this.store, declaredModelName, record, key, options, data);
         }
 
         this.fragments[key] = fragment;
@@ -105,10 +106,11 @@ export default class FragmentModelData extends ModelData {
       }
       this.fragmentNames.forEach((name) => {
         if (name in data.attributes) {
-          this.fragments[name] = data.attributes[name];
+          this.fragmentData[name] = data.attributes[name];
           delete data.attributes[name];
         }
       });
+      return super.setupData(data, calculateChange);
     }
   
     adapterWillCommit() {
