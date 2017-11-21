@@ -18,6 +18,9 @@ import {
   createFragment,
   isFragment
 } from './fragment';
+import {
+  default as Fragment
+} from './fragment';
 
 export default class FragmentModelData extends ModelData {
     constructor(modelName, id, store, data, internalModel) {
@@ -166,9 +169,25 @@ export default class FragmentModelData extends ModelData {
   
     // TODO, Maybe can model as destroying model data?
     resetRecord() {
-      this.__attributes = null;
-      this.__inFlightAttributes = null;
-      this._data = null;
+      super.resetRecord();
+      let key, fragment;
+      // destroy the current state
+      for (key in this.fragments) {
+        fragment = this.fragments[key];
+        if (fragment) {
+          fragment.destroy();
+          delete this.fragments[key];
+        }
+      }
+
+      // destroy the original state
+      for (key in this.fragmentData) {
+        fragment = this.fragmentData[key];
+        if (fragment instanceof Fragment || fragment instanceof FragmentArray) {
+          fragment.destroy();
+          delete this.fragmentData[key];
+        }
+      }
     }
   
     /*

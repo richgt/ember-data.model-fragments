@@ -139,6 +139,7 @@ Model.reopen({
 
     return diffData;
   },
+  */
 
   willDestroy() {
     this._super(...arguments);
@@ -147,24 +148,24 @@ Model.reopen({
     let key, fragment;
 
     // destroy the current state
-    for (key in internalModel._fragments) {
-      fragment = internalModel._fragments[key];
+    for (key in internalModel._modelData.fragments) {
+      fragment = internalModel._modelData.fragments[key];
       if (fragment) {
         fragment.destroy();
-        delete internalModel._fragments[key];
+        delete internalModel._modelData.fragments[key];
       }
     }
 
     // destroy the original state
-    for (key in internalModel._data) {
-      fragment = internalModel._data[key];
+    for (key in internalModel._modelData.fragemntData) {
+      fragment = internalModel._modelData.fragemntData[key];
       if (fragment instanceof Fragment || fragment instanceof FragmentArray) {
         fragment.destroy();
-        delete internalModel._data[key];
+        delete internalModel._modelData.fragemntData[key];
       }
     }
+
   }
-  */
 });
 
 // Replace a method on an object with a new one that calls the original and then
