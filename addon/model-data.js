@@ -36,7 +36,6 @@ export default class FragmentModelData extends ModelData {
 
     // Returns the value of the property or the default propery
     getFragmentWithDefault(key, options, type) {
-      debugger
       let data = this.fragmentData[key];
       if (data !== undefined) {
         return data;
@@ -133,18 +132,25 @@ export default class FragmentModelData extends ModelData {
     }
     // PUBLIC API
   
-    setupData(data, calculateChange) {
-      debugger
-      if (!data.attributes) {
-        return super.setupData(data, calculateChange);
+    setupFragmentData(data, calculateChange) {
+      let keys = [];
+      if (data.attributes) {
+        this.fragmentNames.forEach((name) => {
+          if (calculateChange && this.fragments[name] !== undefined) {
+            keys.push(name);
+          }
+          if (name in data.attributes) {
+            this.fragmentData[name] = data.attributes[name];
+            delete data.attributes[name];
+          }
+        });
       }
-      this.fragmentNames.forEach((name) => {
-        if (name in data.attributes) {
-          this.fragmentData[name] = data.attributes[name];
-          delete data.attributes[name];
-        }
-      });
-      return super.setupData(data, calculateChange);
+      return keys;
+    }
+
+    setupData(data, calculateChange) {
+      let keys = this.setupFragmentData(data, calculateChange);
+      return keys.concat(super.setupData(data, calculateChange));
     }
   
     adapterWillCommit() {
@@ -188,7 +194,6 @@ export default class FragmentModelData extends ModelData {
     }
   
     rollbackAttributes() {
-
       let keys = [];
       for (let key in this.fragments) {
         if (this.fragments[key]) {
@@ -203,28 +208,23 @@ export default class FragmentModelData extends ModelData {
     }
   
     adapterDidCommit(data) {
-      return super.adapterDidCommit(data);
-      /*
-      if (data) {
-        // this.store._internalModelDidReceiveRelationshipData(this.modelName, this.id, data.relationships);
-        if (data.relationships) {
-          this._setupRelationships(data);
+      let fragment, attributes;
+      if (data && data.attributes) {
+        attributes = data.attributes;
+      } else {
+        attributes = Object.create(null);
+      }
+      for (let key in this.fragments) {
+        fragment = this.fragments[key];
+        if (fragment) {
+          fragment._adapterDidCommit(attributes[key]);
         }
-        data = data.attributes;
       }
-      let changedKeys = this._changedKeys(data);
-  
-      emberAssign(this._data, this._inFlightAttributes);
-      if (data) {
-        emberAssign(this._data, data);
-      }
-  
-      this._inFlightAttributes = null;
-  
-      this._updateChangedAttributes();
-      return changedKeys;
-      */
+      // TODO IGOR this seems sketch, not reason we shouldn't setup data here
+      // this.setupFragmentData(data);
+      return super.adapterDidCommit(data);
     }
+
     saveWasRejected() {
       return super.saveWasRejected();
       /*

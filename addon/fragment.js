@@ -112,6 +112,7 @@ const Fragment = Model.extend(Ember.Comparable, Ember.Copyable, {
     @method _adapterDidCommit
   */
   _adapterDidCommit(data) {
+    debugger
     internalModelFor(this).adapterDidCommit({
       attributes: data || Object.create(null)
     });
@@ -186,7 +187,7 @@ export function internalModelFor(record) {
 export function setFragmentOwner(fragment, record, key) {
   let internalModel = internalModelFor(fragment);
 
-  assert('To preserve rollback semantics, fragments can only belong to one owner. Try copying instead', !internalModel._owner || internalModel._owner === record);
+  assert('To preserve rollback semantics, fragments can only belong to one owner. Try copying instead', !internalModel._modelData._owner || internalModel._modelData._owner === record);
 
   internalModel._modelData._owner = record;
   internalModel._modelData._name = key;

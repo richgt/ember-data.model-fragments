@@ -286,7 +286,7 @@ test('existing fragments are updated on save', function(assert) {
       data: {
         type: 'person',
         id: 1,
-        attributes: data
+        attributes: copy(data, true)
       }
     });
 
