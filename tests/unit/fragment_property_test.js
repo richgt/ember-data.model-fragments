@@ -61,6 +61,7 @@ test('a fragment can be created through the store and set', function(assert) {
         first: 'Davos',
         last: 'Seaworth'
       });
+      assert.equal(name.get('first'), 'Davos', 'new fragment has a name set');
 
       person.set('name', name);
 

@@ -75,6 +75,7 @@ export default class FragmentModelData extends ModelData {
     }
 
     setFragmentValue(key, fragment, value, record, declaredModelName, options) {
+      debugger
       let store = this.store;
       assert(`You can only assign \`null\`, an object literal or a '${declaredModelName}' fragment instance to this property`, value === null || typeOf(value) === 'object' || isInstanceOfType(store.modelFor(declaredModelName), value));
 
@@ -100,6 +101,7 @@ export default class FragmentModelData extends ModelData {
       } else {
         fragmentDidReset(record, key);
       }
+      return fragment;
 
     }
 
@@ -297,19 +299,9 @@ export default class FragmentModelData extends ModelData {
     }
   
   
-    /*
-    // TODO IGOR AND DAVID REFACTOR THIS
     didCreateLocally(properties) {
-      // TODO @runspired this should also be coalesced into some form of internalModel.setState()
-      this.internalModel.eachRelationship((key, descriptor) => {
-        if (properties[key] !== undefined) {
-          this._relationships.get(key).setHasData(true);
-        }
-      });
+      // TODO IGOR call super here??
     }
-  
-  
-    */
 
 }
 
