@@ -6,6 +6,7 @@ import { InternalModel } from 'ember-data/-private';
 import { ContainerInstanceCache } from 'ember-data/-private';
 import JSONSerializer from 'ember-data/serializers/json';
 import FragmentRootState from './states';
+import FragmentModelData from './model-data';
 import {
   internalModelFor,
   default as Fragment
@@ -23,6 +24,10 @@ let InternalModelPrototype = InternalModel.prototype;
   @namespace DS
 */
 Store.reopen({
+
+  modelDataClassFor() {
+    return FragmentModelData;
+  },
   /**
     Create a new fragment that does not yet have an owner record.
     The properties passed to this method are set on the newly created
@@ -119,6 +124,7 @@ Model.reopen({
     @return {Object} an object, whose keys are changed properties,
       and value is an [oldProp, newProp] array.
   */
+  /*
   changedAttributes() {
     let diffData = this._super(...arguments);
     let internalModel = internalModelFor(this);
@@ -158,6 +164,7 @@ Model.reopen({
       }
     }
   }
+  */
 });
 
 // Replace a method on an object with a new one that calls the original and then

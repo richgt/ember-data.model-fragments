@@ -82,65 +82,12 @@ function fragment(declaredModelName, options) {
 
   function setupFragment(store, record, key) {
     let internalModel = internalModelFor(record);
-    let data = getWithDefault(internalModel, key, options, 'object');
-    let fragment = internalModel._fragments[key];
-
-    // Regardless of whether being called as a setter or getter, the fragment
-    // may not be initialized yet, in which case the data will contain a
-    // raw response or a stashed away fragment
-
-    // If we already have a processed fragment in _data and our current fragment is
-    // null simply reuse the one from data. We can be in this state after a rollback
-    // for example
-    if (!fragment && isFragment(data)) {
-      fragment = data;
-    // Else initialize the fragment
-    } else if (data && data !== fragment) {
-      if (fragment) {
-        setFragmentData(fragment, data);
-      } else {
-        fragment = createFragment(store, declaredModelName, record, key, options, data);
-      }
-
-      internalModel._data[key] = fragment;
-    } else {
-      // Handle the adapter setting the fragment to null
-      fragment = data;
-    }
-
-    return fragment;
+    return internalModel._modelData.setupFragment(key, options);
   }
 
   function setFragmentValue(record, key, fragment, value) {
-    let store = record.store;
     let internalModel = internalModelFor(record);
-
-    assert(`You can only assign \`null\`, an object literal or a '${declaredModelName}' fragment instance to this property`, value === null || typeOf(value) === 'object' || isInstanceOfType(store.modelFor(declaredModelName), value));
-
-    if (!value) {
-      fragment = null;
-    } else if (isFragment(value)) {
-      // A fragment instance was given, so just replace the existing value
-      fragment = setFragmentOwner(value, record, key);
-    } else if (!fragment) {
-      // A property hash was given but the property was null, so create a new
-      // fragment with the data
-      fragment = createFragment(store, declaredModelName, record, key, options, value);
-    } else {
-      // The fragment already exists and a property hash is given, so just set
-      // its values and let the state machine take care of the dirtiness
-      setProperties(fragment, value);
-
-      return fragment;
-    }
-
-    if (internalModel._data[key] !== fragment) {
-      fragmentDidDirty(record, key, fragment);
-    } else {
-      fragmentDidReset(record, key);
-    }
-
-    return fragment;
+    return internalModel._modelData.setFragmentValue(key, fragment, value);
   }
 
   return fragmentProperty(metaType, options, setupFragment, setFragmentValue);
@@ -282,6 +229,7 @@ function fragmentArrayProperty(metaType, options, createArray) {
     let data = getWithDefault(internalModel, key, options, 'array');
     let fragments = internalModel._fragments[key] || null;
 
+    /*
     // If we already have a processed fragment in _data and our current fragment is
     // null simply reuse the one from data. We can be in this state after a rollback
     // for example
@@ -296,6 +244,7 @@ function fragmentArrayProperty(metaType, options, createArray) {
       // Handle the adapter setting the fragment array to null
       fragments = data;
     }
+    */
 
     return fragments;
   }
@@ -380,11 +329,11 @@ function getDefaultValue(record, options, type) {
 
 // Returns the value of the property or the default propery
 function getWithDefault(internalModel, key, options, type) {
-  if (key in internalModel._data) {
-    return internalModel._data[key];
-  } else {
-    return getDefaultValue(internalModel, options, type);
+  let data = internalModel._modelData.getAttr(key);
+  if (data !== undefined) {
+    return data;
   }
+  return getDefaultValue(internalModel, options, type);
 }
 
 export {
