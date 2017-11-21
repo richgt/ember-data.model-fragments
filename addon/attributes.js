@@ -231,7 +231,6 @@ function fragmentArrayProperty(metaType, options, createArray) {
     let data = getWithDefault(internalModel, key, options, 'array');
     let fragments = internalModel._modelData.fragments[key] || null;
 
-    /*
     // If we already have a processed fragment in _data and our current fragment is
     // null simply reuse the one from data. We can be in this state after a rollback
     // for example
@@ -240,13 +239,12 @@ function fragmentArrayProperty(metaType, options, createArray) {
     // Create a fragment array and initialize with data
     } else if (data && data !== fragments) {
       fragments || (fragments = createArray(record, key));
-      internalModel._data[key] = fragments;
+      internalModel._modelData.fragmentData[key] = fragments;
       fragments.setupData(data);
     } else {
       // Handle the adapter setting the fragment array to null
       fragments = data;
     }
-    */
 
     return fragments;
   }
@@ -263,7 +261,7 @@ function fragmentArrayProperty(metaType, options, createArray) {
       assert('A fragment array property can only be assigned an array or null');
     }
 
-    if (internalModel._modelData._data[key] !== fragments || get(fragments, 'hasDirtyAttributes')) {
+    if (internalModel._modelData.fragmentData[key] !== fragments || get(fragments, 'hasDirtyAttributes')) {
       fragmentDidDirty(record, key, fragments);
     } else {
       fragmentDidReset(record, key);

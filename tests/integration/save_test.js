@@ -234,7 +234,7 @@ test('the adapter can update fragments on save', function(assert) {
       data: {
         type: 'person',
         id: 1,
-        attributes: data
+        attributes: copy(data, true)
       }
     });
 
