@@ -62,7 +62,8 @@ export default class FragmentModelData extends ModelData {
           fragment = createFragment(this.store, declaredModelName, record, key, options, data);
         }
 
-        this.fragments[key] = fragment;
+       // this.fragments[key] = fragment;
+        this.fragmentData[key] = fragment;
       } else {
         // Handle the adapter setting the fragment to null
         fragment = data;
@@ -165,9 +166,12 @@ export default class FragmentModelData extends ModelData {
         if (this.fragments[key]) {
           this.fragments[key].rollbackAttributes();
           keys.push(key);
+        } else {
+          keys.push(key);
+          delete this.fragments[key];
         }
       }
-      return super.rollbackAttributes();
+      return keys.concat(super.rollbackAttributes());
     }
   
     adapterDidCommit(data) {
