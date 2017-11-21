@@ -4,6 +4,11 @@ import { typeOf } from '@ember/utils';
 import { get, setProperties, computed } from '@ember/object';
 import { isArray } from '@ember/array';
 import { copy } from '@ember/object/internals';
+import isInstanceOfType from './util/instance-of-type';
+import {
+  fragmentDidDirty,
+  fragmentDidReset
+} from './states';
 import {
   internalModelFor,
   setFragmentOwner,
@@ -66,7 +71,7 @@ export default class FragmentModelData extends ModelData {
       return fragment;
     }
 
-    setFragmentValue(key, fragment, value) {
+    setFragmentValue(key, fragment, value, record, declaredModelName) {
       let store = this.store;
       assert(`You can only assign \`null\`, an object literal or a '${declaredModelName}' fragment instance to this property`, value === null || typeOf(value) === 'object' || isInstanceOfType(store.modelFor(declaredModelName), value));
 
@@ -272,4 +277,25 @@ export default class FragmentModelData extends ModelData {
   
     */
 
+}
+
+// The default value of a fragment is either an array or an object,
+// which should automatically get deep copied
+function getFragmentDefaultValue(options, type) {
+  let value;
+
+  if (typeof options.defaultValue === 'function') {
+    value = options.defaultValue();
+  } else if ('defaultValue' in options) {
+    value = options.defaultValue;
+  } else if (type === 'array') {
+    value = [];
+  } else {
+    return null;
+  }
+
+  assert(`The fragment's default value must be an ${type}`, (typeOf(value) == type) || (value === null));
+
+  // Create a deep copy of the resulting value to avoid shared reference errors
+  return copy(value, true);
 }

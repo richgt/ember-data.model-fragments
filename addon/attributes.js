@@ -88,7 +88,8 @@ function fragment(declaredModelName, options) {
 
   function setFragmentValue(record, key, fragment, value) {
     let internalModel = internalModelFor(record);
-    return internalModel._modelData.setFragmentValue(key, fragment, value);
+    // TODO Cleanup passing record around
+    return internalModel._modelData.setFragmentValue(key, fragment, value, record, declaredModelName);
   }
 
   return fragmentProperty(metaType, options, setupFragment, setFragmentValue);
