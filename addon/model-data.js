@@ -154,30 +154,15 @@ export default class FragmentModelData extends ModelData {
     }
   
     rollbackAttributes() {
+
+      let keys = [];
+      for (let key in this.fragments) {
+        if (this.fragments[key]) {
+          this.fragments[key].rollbackAttributes();
+          keys.push(key);
+        }
+      }
       return super.rollbackAttributes();
-      /*
-      let dirtyKeys;
-      if (this.hasChangedAttributes()) {
-        dirtyKeys = Object.keys(this._attributes);
-        this._attributes = null;
-      }
-  
-      if (get(this.internalModel, 'isError')) {
-        this._inFlightAttributes = null;
-        // TODO IGOR DAVID seems bad to have to go back, maybe move to internalModel?
-        this.internalModel.didCleanError();
-      }
-  
-      if (this.internalModel.isNew()) {
-        this.removeFromInverseRelationships(true);
-      }
-  
-      if (this.internalModel.isValid()) {
-        this._inFlightAttributes = null;
-      }
-  
-      return dirtyKeys;
-      */
     }
   
     adapterDidCommit(data) {

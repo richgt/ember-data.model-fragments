@@ -217,7 +217,6 @@ decorateMethod(InternalModelPrototype, 'createSnapshot', function createFragment
   ```
 
   @method rollbackAttributes
-*/
 decorateMethod(InternalModelPrototype, 'rollbackAttributes', function rollbackFragments() {
   for (let key in this._fragments) {
     if (this._fragments[key]) {
@@ -225,13 +224,13 @@ decorateMethod(InternalModelPrototype, 'rollbackAttributes', function rollbackFr
     }
   }
 });
+*/
 
 /**
   Before saving a record, its attributes must be moved to in-flight, which must
   happen for all fragments as well
 
   @method flushChangedAttributes
-*/
 decorateMethod(InternalModelPrototype, 'flushChangedAttributes', function flushChangedAttributesFragments() {
   let fragment;
 
@@ -243,6 +242,7 @@ decorateMethod(InternalModelPrototype, 'flushChangedAttributes', function flushC
     }
   }
 });
+*/
 
 /**
   If the adapter did not return a hash in response to a commit,
@@ -250,7 +250,6 @@ decorateMethod(InternalModelPrototype, 'flushChangedAttributes', function flushC
   saved data and notify all fragments of the commit.
 
   @method adapterDidCommit
-*/
 decorateMethod(InternalModelPrototype, 'adapterDidCommit', function adapterDidCommitFragments(returnValue, args) {
   let attributes = (args[0] && args[0].attributes) || Object.create(null);
   let fragment;
@@ -277,6 +276,7 @@ decorateMethod(InternalModelPrototype, 'adapterDidError', function adapterDidErr
   }
 });
 
+*/
 /**
   @class JSONSerializer
   @namespace DS
