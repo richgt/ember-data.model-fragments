@@ -74,7 +74,7 @@ export default class FragmentModelData extends ModelData {
       return fragment;
     }
 
-    setFragmentValue(key, fragment, value, record, declaredModelName) {
+    setFragmentValue(key, fragment, value, record, declaredModelName, options) {
       let store = this.store;
       assert(`You can only assign \`null\`, an object literal or a '${declaredModelName}' fragment instance to this property`, value === null || typeOf(value) === 'object' || isInstanceOfType(store.modelFor(declaredModelName), value));
 
@@ -148,7 +148,9 @@ export default class FragmentModelData extends ModelData {
       return keys;
     }
 
-    setupData(data, calculateChange) {
+    setupData(tempData, calculateChange) {
+      // TODO IGOR REMOVE THIS HACK
+      let data = copy(tempData, true);
       let keys = this.setupFragmentData(data, calculateChange);
       return keys.concat(super.setupData(data, calculateChange));
     }

@@ -140,7 +140,7 @@ test('Fragments can be created with nested object literals', function(assert) {
       ]
     };
 
-    let user = store.createRecord('user', data);
+    let user = store.createRecord('user', copy(data, true));
     let orders = user.get('orders');
 
     assert.equal(orders.get('length'), 2, 'fragment array length is correct');
