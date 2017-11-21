@@ -227,26 +227,7 @@ function fragmentProperty(type, options, setupFragment, setFragmentValue) {
 
 function fragmentArrayProperty(metaType, options, createArray) {
   function setupFragmentArray(store, record, key) {
-    let internalModel = internalModelFor(record);
-    let data = getWithDefault(internalModel, key, options, 'array');
-    let fragments = internalModel._modelData.fragments[key] || null;
-
-    // If we already have a processed fragment in _data and our current fragment is
-    // null simply reuse the one from data. We can be in this state after a rollback
-    // for example
-    if (data instanceof StatefulArray && !fragments) {
-      fragments = data;
-    // Create a fragment array and initialize with data
-    } else if (data && data !== fragments) {
-      fragments || (fragments = createArray(record, key));
-      internalModel._modelData.fragmentData[key] = fragments;
-      fragments.setupData(data);
-    } else {
-      // Handle the adapter setting the fragment array to null
-      fragments = data;
-    }
-
-    return fragments;
+    return record._internalModel._modelData.setupFragmentArray(key, options, createArray, record);
   }
 
   function setFragmentValue(record, key, fragments, value) {

@@ -4,6 +4,7 @@ import { A, isArray } from '@ember/array';
 import { test } from 'qunit';
 import moduleForAcceptance from '../helpers/module-for-acceptance';
 import getOwner from '../helpers/get-owner';
+import { copy } from '@ember/object/internals';
 
 let store, people;
 
@@ -53,7 +54,7 @@ function pushPerson(id) {
     data: {
       type: 'person',
       id: id,
-      attributes: A(people).findBy('id', id)
+      attributes: copy(A(people).findBy('id', id), true)
     }
   });
 }

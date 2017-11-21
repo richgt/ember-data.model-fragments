@@ -9,6 +9,8 @@ import {
   fragmentDidDirty,
   fragmentDidReset
 } from './states';
+import StatefulArray from './array/stateful';
+import FragmentArray from './array/fragment';
 import {
   internalModelFor,
   setFragmentOwner,
@@ -34,6 +36,7 @@ export default class FragmentModelData extends ModelData {
 
     // Returns the value of the property or the default propery
     getFragmentWithDefault(key, options, type) {
+      debugger
       let data = this.fragmentData[key];
       if (data !== undefined) {
         return data;
@@ -100,6 +103,30 @@ export default class FragmentModelData extends ModelData {
       }
 
     }
+
+
+    setupFragmentArray(key, options, createArray, record) {
+      debugger
+      let data = this.getFragmentWithDefault(key, options, 'array');
+      let fragments = this.fragments[key] || null;
+
+      // If we already have a processed fragment in _data and our current fragment is
+      // null simply reuse the one from data. We can be in this state after a rollback
+      // for example
+      if (data instanceof StatefulArray && !fragments) {
+        fragments = data;
+      // Create a fragment array and initialize with data
+      } else if (data && data !== fragments) {
+        fragments || (fragments = createArray(record, key));
+        this.fragmentData[key] = fragments;
+        fragments.setupData(data);
+      } else {
+        // Handle the adapter setting the fragment array to null
+        fragments = data;
+      }
+
+      return fragments;
+    }
   
     getFragment(key) {
 
@@ -107,6 +134,7 @@ export default class FragmentModelData extends ModelData {
     // PUBLIC API
   
     setupData(data, calculateChange) {
+      debugger
       if (!data.attributes) {
         return super.setupData(data, calculateChange);
       }
